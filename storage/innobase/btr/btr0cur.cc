@@ -5718,9 +5718,6 @@ btr_estimate_n_rows_in_range_low(
 	ibool		is_n_rows_exact;
 	ulint		i;
 	mtr_t		mtr;
-	int64_t		table_n_rows;
-
-	table_n_rows = dict_table_get_n_rows(index->table);
 
 	/* Below we dive to the two records specified by tuple1 and tuple2 and
 	we remember the entire dive paths from the tree root. The place where
@@ -5930,22 +5927,6 @@ btr_estimate_n_rows_in_range_low(
 			}
 
 			DBUG_EXECUTE_IF("bug14007649", return(n_rows););
-
-			/* Do not estimate the number of rows in the range
-			to over 1 / 2 of the estimated rows in the whole
-			table */
-
-			if (n_rows > table_n_rows / 2 && !is_n_rows_exact) {
-
-				n_rows = table_n_rows / 2;
-
-				/* If there are just 0 or 1 rows in the table,
-				then we estimate all rows are in the range */
-
-				if (n_rows == 0) {
-					n_rows = table_n_rows;
-				}
-			}
 
 			return(n_rows);
 		}
